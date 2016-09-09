@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/url"
+	"os"
 	"path"
 )
 
@@ -38,7 +39,7 @@ func retriveFromQuay(image string) ([]string, error) {
 		return nil, err
 	}
 
-	body, err := httpGet(url)
+	body, err := httpGet(url, os.Getenv("QUAYIO_TOKEN"))
 	if err != nil {
 		return nil, err
 	}
