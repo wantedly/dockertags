@@ -4,10 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 func httpGet(url string) (string, error) {
-	resp, err := http.Get(url)
+
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", "Bearer "+os.Getenv("QUAYIO_TOKEN"))
+	client := new(http.Client)
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
