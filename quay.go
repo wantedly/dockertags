@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/url"
+	"os"
 	"path"
 )
 
@@ -27,7 +28,7 @@ func constructQuayURL(image string) (string, error) {
 		return "", err
 	}
 
-	u.Path = path.Join(u.Path, image, "tag")
+	u.Path = path.Join(u.Path, image, "tag") + "/"
 
 	return u.String(), nil
 }
@@ -38,7 +39,7 @@ func retriveFromQuay(image string) ([]string, error) {
 		return nil, err
 	}
 
-	body, err := httpGet(url)
+	body, err := httpGet(url, os.Getenv("QUAYIO_TOKEN"))
 	if err != nil {
 		return nil, err
 	}

@@ -6,8 +6,13 @@ import (
 	"net/http"
 )
 
-func httpGet(url string) (string, error) {
-	resp, err := http.Get(url)
+func httpGet(url, apiToken string) (string, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	if apiToken != "" {
+		req.Header.Set("Authorization", "Bearer "+apiToken)
+	}
+	client := new(http.Client)
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
