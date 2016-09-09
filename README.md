@@ -1,4 +1,4 @@
-# docekrtags - Retrive available Docker image tag list from image repository
+# dockertags - Retrive available Docker image tag list from image repository
 
 [![Docker Repository on Quay](https://quay.io/repository/wantedly/dockertags/status "Docker Repository on Quay")](https://quay.io/repository/wantedly/dockertags)
 
