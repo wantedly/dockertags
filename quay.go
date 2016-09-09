@@ -27,7 +27,7 @@ func constructQuayURL(image string) (string, error) {
 		return "", err
 	}
 
-	u.Path = path.Join(u.Path, image, "tag")
+	u.Path = path.Join(u.Path, image, "tag") + "/"
 
 	return u.String(), nil
 }
