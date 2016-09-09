@@ -35,6 +35,8 @@ func main() {
 
 	switch repo {
 	case "index.docker.io":
+		fmt.Fprintln(os.Stderr, "Retrive from Docker Hub is NOT implemented yet...")
+		os.Exit(1)
 	case "quay.io":
 		t, err := retriveFromQuay(image)
 		if err != nil {
@@ -44,7 +46,8 @@ func main() {
 
 		tags = t
 	default:
-
+		fmt.Fprintf(os.Stderr, "Unsupported image repository: %s\n", repo)
+		os.Exit(1)
 	}
 
 	for _, tag := range tags {
