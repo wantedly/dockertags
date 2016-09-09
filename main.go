@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +16,19 @@ const Usage = `Usage:
 `
 
 const QuayURLBase = "https://quay.io/api/v1/repository/"
+
+type QuayTag struct {
+	Revision      bool   `json:"revision"`
+	StartTs       int    `json:"start_ts"`
+	Name          string `json:"name"`
+	DockerImageID string `json:"docker_image_id"`
+}
+
+type QuayTagsResponse struct {
+	HasAdditional bool      `json:"has_additional"`
+	Page          int       `json:"page"`
+	Tags          []QuayTag `json:"tags"`
+}
 
 func constructURL(base, image string) (string, error) {
 	u, err := url.Parse(base)
@@ -58,10 +72,19 @@ func retriveFromQuay(image string) ([]string, error) {
 		return nil, err
 	}
 
-	// TODO: parse JSON
-	fmt.Println(body)
+	var resp QuayTagsResponse
 
-	return []string{}, nil
+	if err := json.Unmarshal([]byte(body), &resp); err != nil {
+		return nil, err
+	}
+
+	tags := []string{}
+
+	for _, tag := range resp.Tags {
+		tags = append(tags, tag.Name)
+	}
+
+	return tags, nil
 }
 
 func main() {
