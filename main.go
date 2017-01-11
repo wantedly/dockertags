@@ -27,16 +27,21 @@ func main() {
 		repo = ss[0]
 		image = strings.Join(ss[1:], "/")
 	} else {
-		repo = "index.docker.io"
+		repo = "hub.docker.com"
 		image = strings.Join(ss, "/")
 	}
 
 	var tags []string
 
 	switch repo {
-	case "index.docker.io":
-		fmt.Fprintln(os.Stderr, "Retrive from Docker Hub is NOT implemented yet...")
-		os.Exit(1)
+	case "hub.docker.com":
+		t, err := retrieveFromDockerHub(image)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
+		tags = t
 	case "quay.io":
 		t, err := retriveFromQuay(image)
 		if err != nil {

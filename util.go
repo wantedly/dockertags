@@ -6,11 +6,21 @@ import (
 	"net/http"
 )
 
-func httpGet(url, apiToken string) (string, error) {
+type BasicAuthInfo struct {
+	Username string
+	Password string
+}
+
+func httpGet(url, apiToken string, basicAuth *BasicAuthInfo) (string, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 	if apiToken != "" {
 		req.Header.Set("Authorization", "Bearer "+apiToken)
 	}
+
+	if basicAuth != nil {
+		req.SetBasicAuth(basicAuth.Username, basicAuth.Password)
+	}
+
 	client := new(http.Client)
 	resp, err := client.Do(req)
 	if err != nil {

@@ -39,7 +39,7 @@ func retriveFromQuay(image string) ([]string, error) {
 		return nil, err
 	}
 
-	body, err := httpGet(url, os.Getenv("QUAYIO_TOKEN"))
+	body, err := httpGet(url, os.Getenv("QUAYIO_TOKEN"), nil)
 	if err != nil {
 		return nil, err
 	}
