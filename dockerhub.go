@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"path"
 )
 
@@ -52,7 +53,15 @@ func retrieveDockerHubAuthToken(image string) (string, error) {
 		return "", err
 	}
 
-	body, err := httpGet(url, "")
+	var body string
+	if os.Getenv("DOCKERHUB_USERNAME") != "" && os.Getenv("DOCKERHUB_PASSWORD") != "" {
+		body, err = httpGet(url, "", &BasicAuthInfo{
+			Username: os.Getenv("DOCKERHUB_USERNAME"),
+			Password: os.Getenv("DOCKERHUB_PASSWORD"),
+		})
+	} else {
+		body, err = httpGet(url, "", nil)
+	}
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +86,7 @@ func retrieveFromDockerHub(image string) ([]string, error) {
 		return nil, err
 	}
 
-	body, err := httpGet(dockerHubAPIURL, dockerHubAccessToken)
+	body, err := httpGet(dockerHubAPIURL, dockerHubAccessToken, nil)
 	if err != nil {
 		return nil, err
 	}
