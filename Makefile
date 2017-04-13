@@ -44,3 +44,8 @@ glide:
 ifeq ($(shell command -v glide 2> /dev/null),)
 	curl https://glide.sh/get | sh
 endif
+
+.PHONY: release
+release:
+	git tag $(VERSION)
+	git push origin $(VERSION)
