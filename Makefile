@@ -26,6 +26,10 @@ cross-build:
 		done; \
 	done
 
+.PHONY: deps
+deps: glide
+	glide install
+
 .PHONY: dist
 dist:
 	cd dist && \
@@ -34,3 +38,9 @@ dist:
 	$(DIST_DIRS) tar -zcf $(NAME)-$(VERSION)-{}.tar.gz {} \; && \
 	$(DIST_DIRS) zip -r $(NAME)-$(VERSION)-{}.zip {} \; && \
 	cd ..
+
+.PHONY: glide
+glide:
+ifeq ($(shell command -v glide 2> /dev/null),)
+	curl https://glide.sh/get | sh
+endif
