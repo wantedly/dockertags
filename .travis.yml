@@ -1,0 +1,26 @@
+language: go
+go:
+  - '1.8'
+env:
+  global:
+  - secure: YtIXb4e4cHUWP5awg1q/x7eBsRULWM4CBZUvYs7U/pMre52oaCkT0IRCZ/sWfUiU8x6ax9NytrcF5JudH9uhysNDqcJcPyBmifloY0DEC9V2tGnnm/VeOS8nKVYbgJcFqsu4x9gdTfUC6HZ/hkTwIQih57ig5STeFX21eLAWSyUkyxq2QpM56Yhtxuc6IZ/K0uOFbLn0A2cV46Cwlln6lwDmTt23MWb8ZMwggd+EUptoj6kvQCJxuoP09k7xLIg6FB/lgKHsGqnIhEvt/A87vSCttYbBRN3CT8qgbVYKsL37nML3QH2akMkHacHSB7tEZCl+sTuK7b6T3fr3OrhuHZFjk2Q2JvFKMuVvv7m1bOulurA++WCOrxKq9CLqKaL51k2XzEr0BrqO2bWWMpEEq4JuTcRM5uCi2IORzyCPhO4li527GFHyQs1bDrdPcSm9xmlw9/QIqaS0g+3v7ve2qEVQpNLHlVkidb9D2nFztVFOnUfHUKwYvK/CT/bxuwZd2t65Jex1faVmyo3SCztHGs9UUzS72TrzT7GRj7azXvygRC9Fx1kuDCRHDVERw8dHGircYuu2XpqSL+iuQwY5pIP8Ql1tD9rJojN/oYm51u5rCRgYA/NyEuPAlloEj1M50Iut6blNeYY3J1sVCwVyTXnjLJupJaFSMs1wS22GHks=
+before_install:
+  - sudo add-apt-repository ppa:masterminds/glide -y
+  - sudo apt-get update -q
+  - sudo apt-get install glide -y
+  - mkdir -p $GOPATH/bin
+install:
+  - make deps
+script:
+  - make test
+before_deploy:
+  - make cross-build
+  - make dist
+deploy:
+  - provider: releases
+    skip_cleanup: true
+    api_key: $GITHUB_TOKEN
+    file_glob: true
+    file: 'dist/*.{tar.gz,zip}'
+    on:
+      tags: true
