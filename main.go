@@ -26,6 +26,10 @@ func main() {
 	if len(ss) > 2 {
 		repo = ss[0]
 		image = strings.Join(ss[1:], "/")
+	} else if len(ss) == 1 {
+		// Official image of DockerHub
+		repo = "hub.docker.com"
+		image = strings.Join(append([]string{"library"}, ss...), "/")
 	} else {
 		repo = "hub.docker.com"
 		image = strings.Join(ss, "/")
