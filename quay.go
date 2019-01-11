@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 )
 
 const QuayURLBase = "https://quay.io/api/v1/repository/"
@@ -22,38 +23,49 @@ type QuayTagsResponse struct {
 	Tags          []QuayTag `json:"tags"`
 }
 
-func constructQuayURL(image string) (string, error) {
+func constructQuayURL(image string, Page int) (string, error) {
 	u, err := url.Parse(QuayURLBase)
 	if err != nil {
 		return "", err
 	}
 
 	u.Path = path.Join(u.Path, image, "tag") + "/"
+	queryString := u.Query()
+	queryString.Set("page", strconv.Itoa(Page))
+	u.RawQuery = queryString.Encode()
 
 	return u.String(), nil
 }
 
 func retriveFromQuay(image string) ([]string, error) {
-	url, err := constructQuayURL(image)
-	if err != nil {
-		return nil, err
-	}
+	var (
+  	HasAdditional	bool
+    Page		int
+		resp		QuayTagsResponse
+  )
+  HasAdditional = true
+  Page = 1
+  tags := []string{}
 
-	body, err := httpGet(url, os.Getenv("QUAYIO_TOKEN"), nil)
-	if err != nil {
-		return nil, err
-	}
+  for HasAdditional {
+		url, err := constructQuayURL(image, Page)
+		if err != nil {
+			return nil, err
+		}
+		body, err := httpGet(url, os.Getenv("QUAYIO_TOKEN"), nil)
+		if err != nil {
+			return nil, err
+		}
 
-	var resp QuayTagsResponse
+		if err := json.Unmarshal([]byte(body), &resp); err != nil {
+			return nil, err
+		}
+		Page = resp.Page+1
+		HasAdditional = resp.HasAdditional
 
-	if err := json.Unmarshal([]byte(body), &resp); err != nil {
-		return nil, err
-	}
-
-	tags := []string{}
-
-	for _, tag := range resp.Tags {
-		tags = append(tags, tag.Name)
+		for _, tag := range resp.Tags {
+			tags = append(tags, tag.Name)
+		}
 	}
 
 	return tags, nil
