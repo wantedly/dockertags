@@ -46,6 +46,9 @@ func retriveFromgcrio(image string, grepo string) ([]string, error) {
 		return nil, err
 	}
 	tags := resp.Tags
-
+  // Reverse the order of the tags to make it ordered as: "latest => oldest"
+  for i, j := 0, len(tags)-1; i < j; i, j = i+1, j-1 {
+          tags[i], tags[j] = tags[j], tags[i]
+  }
 	return tags, nil
 }
