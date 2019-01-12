@@ -73,7 +73,7 @@ func main() {
 
 			tags = t
 		case "gcr.io":
-			t, err := retriveFromgcrio(image, grepo)
+			t, err := retriveFromgcr(image, grepo)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)

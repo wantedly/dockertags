@@ -94,7 +94,7 @@ gcr.io/google-containers/busybox:latest
 - [Docker Hub](https://hub.docker.com)
   - To retrieve tags of private image, set `DOCKER_USERNAME` and `DOCKER_PASSWORD` for [Docker Hub](hub.docker.com). If they're not set, only tags for public images will be fetched.
 - [Google Cloud Registry](https://gcr.io)
-  - Private images not tested, but you can try use `GCRIO_TOKEN` variable. I hope it works :)
+  - Private images not tested, but you can try use `GCR_TOKEN` variable. I hope it works :)
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)

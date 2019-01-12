@@ -7,22 +7,22 @@ import (
 	"path"
 )
 
-const gcrioURLBase = "https://"
+const gcrURLBase = "https://"
 
-type gcrioTag struct {
+type gcrTag struct {
 	Revision      bool   `json:"revision"`
 	StartTs       int    `json:"start_ts"`
 	Name          string `json:"name"`
 	DockerImageID string `json:"docker_image_id"`
 }
 
-type gcrioTagsResponse struct {
+type gcrTagsResponse struct {
         Name string   `json:"name"`
         Tags []string `json:"tags"`
 }
 
-func constructgcrioURL(image string, grepo string) (string, error) {
-	u, err := url.Parse(gcrioURLBase)
+func constructgcrURL(image string, grepo string) (string, error) {
+	u, err := url.Parse(gcrURLBase)
 	if err != nil {
 		return "", err
 	}
@@ -31,16 +31,16 @@ func constructgcrioURL(image string, grepo string) (string, error) {
 	return u.String(), nil
 }
 
-func retriveFromgcrio(image string, grepo string) ([]string, error) {
-	url, err := constructgcrioURL(image, grepo)
+func retriveFromgcr(image string, grepo string) ([]string, error) {
+	url, err := constructgcrURL(image, grepo)
 	if err != nil {
 		return nil, err
 	}
-	body, err := httpGet(url, os.Getenv("GCRIO_TOKEN"), nil)
+	body, err := httpGet(url, os.Getenv("GCR_TOKEN"), nil)
 	if err != nil {
 		return nil, err
 	}
-	var resp gcrioTagsResponse
+	var resp gcrTagsResponse
 
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
 		return nil, err
