@@ -1,5 +1,5 @@
 NAME := dockertags
-VERSION := v0.3.2
+VERSION := v0.3.3
 REVISION := $(shell git rev-parse --short HEAD)
 
 SRCS := $(shell find . -name '*.go' -type f)
