@@ -23,7 +23,7 @@ func main() {
 
 	ss := strings.Split(os.Args[1], "/")
 
-	if len(ss) > 2 {
+	if len(ss) > 1 {
 		repo = ss[0]
 		image = strings.Join(ss[1:], "/")
 	} else if len(ss) == 1 {
@@ -37,8 +37,8 @@ func main() {
 
 	var tags []string
 
-	switch repo {
-	case "hub.docker.com":
+	switch {
+	case strings.Contains(repo, "hub.docker.com"):
 		t, err := retrieveFromDockerHub(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -46,11 +46,18 @@ func main() {
 		}
 
 		tags = t
-	case "quay.io":
+	case strings.Contains(repo, "quay.io"):
 		t, err := retriveFromQuay(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
+		}
+
+		tags = t
+	case strings.Contains(repo, "amazonaws.com"):
+		t, err := retrieveFromECR(image)
+		if err != nil {
+			fmt.Println(err)
 		}
 
 		tags = t

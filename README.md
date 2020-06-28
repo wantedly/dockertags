@@ -44,6 +44,8 @@ latest
   - To retrieve tags of private image, pass [API access token](http://docs.quay.io/api/) to `QUAYIO_TOKEN` environement variable.
 - [Docker Hub](https://hub.docker.com)
   - To retrieve tags of private image, set `DOCKER_USERNAME` and `DOCKER_PASSWORD` for [Docker Hub](hub.docker.com). If they're not set, only tags for public images will be fetched.
+- [Amazon ECR](https://aws.amazon.com/ecr/)
+  - To retrieve tags of private image, set proper `AWS_PROFILE` and `AWS_REGION` variable in your environment variables. If `AWS_PROFILE` is not set, it will use `AWS_DEFAULT_PROFILE`.
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
