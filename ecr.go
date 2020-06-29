@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"sort"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -35,16 +34,7 @@ func (b ByPushedAt) Less(i, j int) bool {
 }
 
 func retrieveFromECR(image string) ([]string, error) {
-	profile := os.Getenv("AWS_PROFILE")
-
-	region := os.Getenv("AWS_REGION")
-	if region == "" {
-		return nil, fmt.Errorf("Error: AWS_REGION must be set")
-	}
-
-	svc := ecr.New(session.New(), &aws.Config{
-		Region: aws.String(os.Getenv("AWS_REGION")),
-	})
+	svc := ecr.New(session.New())
 	input := &ecr.DescribeImagesInput{
 		RepositoryName: aws.String(image),
 		Filter: &ecr.DescribeImagesFilter{
