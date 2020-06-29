@@ -10,29 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecr"
 )
 
-// for sorting setups
-// TODO: consider using global parameter 'query' to get sorted result directory from API
-// ref: https://docs.aws.amazon.com/cli/latest/reference/index.html
-type Images []ecr.ImageDetail // type alias to implement Len and Swap
-
-func (img Images) Len() int {
-	return len(img)
-}
-
-func (img Images) Swap(i, j int) {
-	img[i], img[j] = img[j], img[i]
-}
-
-type ByPushedAt struct {
-	Images
-}
-
-func (b ByPushedAt) Less(i, j int) bool {
-	ti := *b.Images[i].ImagePushedAt
-	tj := *b.Images[j].ImagePushedAt
-	return ti.Before(tj)
-}
-
 func retrieveFromECR(image string) ([]string, error) {
 	svc := ecr.New(session.New())
 	input := &ecr.DescribeImagesInput{
@@ -50,11 +27,11 @@ func retrieveFromECR(image string) ([]string, error) {
 		return nil, err
 	}
 
-	tags := extractEcrTagNames(castEcrImageDetailsToImages(result.ImageDetails))
+	tags := extractEcrTagNames(result.ImageDetails)
 	return tags, nil
 }
 
-func extractEcrTagNames(images Images) []string {
+func extractEcrTagNames(images []*ecr.ImageDetail) []string {
 	tags := []string{}
 	sort.Slice(images, func(i, j int) bool {
 		return images[i].ImagePushedAt.After(*images[j].ImagePushedAt)
@@ -66,12 +43,4 @@ func extractEcrTagNames(images Images) []string {
 		}
 	}
 	return tags
-}
-
-func castEcrImageDetailsToImages(ecrImages []*ecr.ImageDetail) Images {
-	images := Images{}
-	for _, image := range ecrImages {
-		images = append(images, *image)
-	}
-	return images
 }
