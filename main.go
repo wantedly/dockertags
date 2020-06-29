@@ -61,6 +61,13 @@ func main() {
 		}
 
 		tags = t
+	case strings.Contains(repo, "gcr.io"):
+		t, err := retrieveFromGCR(repo, image)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		tags = t
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported image repository: %s\n", repo)
 		os.Exit(1)
