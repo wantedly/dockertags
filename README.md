@@ -45,7 +45,7 @@ latest
 - [Docker Hub](https://hub.docker.com)
   - To retrieve tags of private image, set `DOCKER_USERNAME` and `DOCKER_PASSWORD` for [Docker Hub](hub.docker.com). If they're not set, only tags for public images will be fetched.
 - [Amazon ECR](https://aws.amazon.com/ecr/)
-  - To retrieve tags of private image, set proper `AWS_PROFILE` and `AWS_REGION` variable in your environment variables. If `AWS_PROFILE` is not set, it will use `AWS_DEFAULT_PROFILE`.
+  - To retrieve tags of private image, [configure the profile for AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
