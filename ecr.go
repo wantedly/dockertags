@@ -63,11 +63,11 @@ func retrieveFromECR(image string) ([]string, error) {
 		return nil, err
 	}
 
-	tags := extractTagNames(castEcrImageDetailsToImages(result.ImageDetails))
+	tags := extractEcrTagNames(castEcrImageDetailsToImages(result.ImageDetails))
 	return tags, nil
 }
 
-func extractTagNames(images Images) []string {
+func extractEcrTagNames(images Images) []string {
 	tags := []string{}
 	sort.Sort(sort.Reverse(ByPushedAt{images})) // sort Newest -> Oldest
 	for _, image := range images {
