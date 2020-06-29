@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -22,7 +21,7 @@ func retrieveFromECR(image string) ([]string, error) {
 	result, err := svc.DescribeImages(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
-			return nil, fmt.Errorf(aerr.Error())
+			return nil, aerr
 		}
 		return nil, err
 	}
