@@ -14,7 +14,7 @@ import (
 // for sorting setups
 // TODO: consider using global parameter 'query' to get sorted result directory from API
 // ref: https://docs.aws.amazon.com/cli/latest/reference/index.html
-type Images []ecr.ImageDetail  // type alias to implement Len and Swap
+type Images []ecr.ImageDetail // type alias to implement Len and Swap
 
 func (img Images) Len() int {
 	return len(img)
