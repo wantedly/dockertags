@@ -16,7 +16,6 @@ bin/$(NAME): $(SRCS)
 clean:
 	rm -rf bin/*
 	rm -rf dist/*
-	rm -rf vendor/*
 
 .PHONY: cross-build
 cross-build:
@@ -25,10 +24,6 @@ cross-build:
 			GOOS=$$os GOARCH=$$arch CGO_ENABLED=0 go build -a -tags netgo -installsuffix netgo $(LDFLAGS) -o dist/$$os-$$arch/$(NAME); \
 		done; \
 	done
-
-.PHONY: deps
-deps: glide
-	glide install
 
 .PHONY: dist
 dist:
@@ -39,12 +34,6 @@ dist:
 	$(DIST_DIRS) zip -r $(NAME)-$(VERSION)-{}.zip {} \; && \
 	cd ..
 
-.PHONY: glide
-glide:
-ifeq ($(shell command -v glide 2> /dev/null),)
-	curl https://glide.sh/get | sh
-endif
-
 .PHONY: release
 release:
 	git tag $(VERSION)
@@ -52,4 +41,4 @@ release:
 
 .PHONY: test
 test:
-	go test -cover -v `glide novendor`
+	go test -cover -v
