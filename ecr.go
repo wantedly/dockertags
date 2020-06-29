@@ -74,7 +74,9 @@ func extractEcrTagNames(images Images) []string {
 	}) // sort Newest -> Oldest
 
 	for _, image := range images {
-		tags = append(tags, *image.ImageTags[0])
+		for _, tag := range image.ImageTags {
+			tags = append(tags, *tag)
+		}
 	}
 	return tags
 }
