@@ -38,7 +38,7 @@ func main() {
 	var tags []string
 
 	switch {
-	case strings.Contains(repo, "hub.docker.com"):
+	case repo == "hub.docker.com":
 		t, err := retrieveFromDockerHub(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -46,7 +46,7 @@ func main() {
 		}
 
 		tags = t
-	case strings.Contains(repo, "quay.io"):
+	case repo == "quay.io":
 		t, err := retriveFromQuay(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -54,10 +54,11 @@ func main() {
 		}
 
 		tags = t
-	case strings.Contains(repo, "amazonaws.com"):
+	case strings.HasSuffix(repo, "amazonaws.com"):
 		t, err := retrieveFromECR(image)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 
 		tags = t
