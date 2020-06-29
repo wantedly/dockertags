@@ -36,9 +36,6 @@ func (b ByPushedAt) Less(i, j int) bool {
 
 func retrieveFromECR(image string) ([]string, error) {
 	profile := os.Getenv("AWS_PROFILE")
-	if profile == "" {
-		fmt.Println("use aws default profile")
-	}
 
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
