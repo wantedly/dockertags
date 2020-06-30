@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
+
+	"github.com/docker/distribution/reference"
 )
 
 const Usage = `Usage:
@@ -16,29 +17,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	var (
-		repo  string
-		image string
-	)
-
-	ss := strings.Split(os.Args[1], "/")
-
-	if len(ss) > 1 {
-		repo = ss[0]
-		image = strings.Join(ss[1:], "/")
-	} else if len(ss) == 1 {
-		// Official image of DockerHub
-		repo = "hub.docker.com"
-		image = strings.Join(append([]string{"library"}, ss...), "/")
-	} else {
-		repo = "hub.docker.com"
-		image = strings.Join(ss, "/")
+	ref, err := reference.ParseNormalizedNamed(os.Args[1])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
+	repo, image := reference.SplitHostname(ref)
 
 	var tags []string
 
-	switch {
-	case repo == "hub.docker.com":
+	switch repo {
+	case "docker.io", "hub.docker.com":
 		t, err := retrieveFromDockerHub(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
