@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/docker/distribution/reference"
 )
@@ -26,8 +27,8 @@ func main() {
 
 	var tags []string
 
-	switch repo {
-	case "docker.io", "hub.docker.com":
+	switch {
+	case repo == "docker.io" || repo == "hub.docker.com":
 		t, err := retrieveFromDockerHub(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
