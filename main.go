@@ -23,7 +23,7 @@ func main() {
 
 	ss := strings.Split(os.Args[1], "/")
 
-	if len(ss) > 2 || strings.HasSuffix(ss[0], "amazonaws.com") {
+	if len(ss) > 1 {
 		repo = ss[0]
 		image = strings.Join(ss[1:], "/")
 	} else if len(ss) == 1 {
