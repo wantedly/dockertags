@@ -17,29 +17,15 @@ type gcrAuthResponse struct {
 
 type gcrTagsResponse struct {
 	Manifest map[string]json.RawMessage `json:"manifest"`
-	Name string   `json:"name"`
-	Tags []string `json:"tags"`
 }
 
 // for sorting setups
 type gcrImageDetail struct {
-	TimeCreatedMs string `json:"timeCreatedMs"`
-	Tag []string `json:"tag"`
+	TimeCreatedMs string   `json:"timeCreatedMs"`
+	Tag           []string `json:"tag"`
 }
 
 type gcrImages []gcrImageDetail
-
-func (img gcrImages) Len() int {
-	return len(img)
-}
-
-func (img gcrImages) Swap(i, j int) {
-	img[i], img[j] = img[j], img[i]
-}
-
-func (img gcrImages) Less(i, j int) bool {
-	return img[i].TimeCreatedMs < img[j].TimeCreatedMs
-}
 
 // ref: https://stackoverflow.com/questions/34037256/does-google-container-registry-support-docker-remote-api-v2/34046435#34046435
 func fetchBearer(repo string, image string) (string, error) {
@@ -56,7 +42,7 @@ func fetchBearer(repo string, image string) (string, error) {
 
 	var resp gcrAuthResponse
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
-		return "", fmt.Errorf("errof in fetchBearer: %v", err)
+		return "", err
 	}
 	return resp.Token, nil
 }
@@ -85,8 +71,8 @@ func parseGCRTagsResponse(manifests gcrTagsResponse) (gcrImages, error) {
 	gcrImages := gcrImages{}
 	for _, manifest := range manifests.Manifest {
 		var imageDetail gcrImageDetail
-		if err := json.Unmarshal([]byte(manifest), &imageDetail); err !=nil {
-			return nil, fmt.Errorf("error: %s", err)
+		if err := json.Unmarshal([]byte(manifest), &imageDetail); err != nil {
+			return nil, err
 		}
 		gcrImages = append(gcrImages, imageDetail)
 	}
@@ -95,11 +81,16 @@ func parseGCRTagsResponse(manifests gcrTagsResponse) (gcrImages, error) {
 
 func extractGCRTagNames(images gcrImages) []string {
 	tags := []string{}
+	sort.Slice(images, func(i, j int) bool {
+		return images[i].TimeCreatedMs > images[j].TimeCreatedMs
+	}) // sort Newset -> Oldest
+
 	for _, image := range images {
-		tagStr := strings.Join(image.Tag, ", ")
-		tags = append(tags, tagStr)
+		for _, tag := range image.Tag {
+			tags = append(tags, tag)
+		}
 	}
-	return tags	
+	return tags
 }
 
 func retrieveFromGCR(repo string, image string) ([]string, error) {
@@ -117,15 +108,14 @@ func retrieveFromGCR(repo string, image string) ([]string, error) {
 
 	var resp gcrTagsResponse
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
-		return nil, fmt.Errorf("cannot unmarshal gcrTagsResponse: %s", err)
+		return nil, err
 	}
 
 	images, err := parseGCRTagsResponse(resp)
 	if err != nil {
 		return nil, err
 	}
-	sort.Sort(sort.Reverse(images))
-	tags := extractGCRTagNames(images)
 
+	tags := extractGCRTagNames(images)
 	return tags, nil
 }

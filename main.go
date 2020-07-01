@@ -52,17 +52,11 @@ func main() {
 		}
 
 		tags = t
-	case strings.Contains(repo, "gcr.io"):
+	case strings.HasSuffix(repo, "gcr.io"):
 		t, err := retrieveFromGCR(repo, image)
 		if err != nil {
-			fmt.Println(err)
-		}
-
-		tags = t
-	case strings.Contains(repo, "gcr.io"):
-		t, err := retrieveFromGCR(repo, image)
-		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 
 		tags = t
