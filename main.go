@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/docker/distribution/reference"
 )
@@ -26,8 +27,8 @@ func main() {
 
 	var tags []string
 
-	switch repo {
-	case "docker.io", "hub.docker.com":
+	switch {
+	case repo == "docker.io" || repo == "hub.docker.com":
 		t, err := retrieveFromDockerHub(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -35,8 +36,16 @@ func main() {
 		}
 
 		tags = t
-	case "quay.io":
+	case repo == "quay.io":
 		t, err := retriveFromQuay(image)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
+		tags = t
+	case strings.HasSuffix(repo, "amazonaws.com"):
+		t, err := retrieveFromECR(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
