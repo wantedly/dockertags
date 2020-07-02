@@ -34,7 +34,7 @@ func fetchBearer(repo string, image string) (string, error) {
 		return "", err
 	}
 
-	url := constructAuthURL(repo, image)
+	url := constructGCRAuthURL(repo, image)
 	body, err := httpGet(url, "", &BasicAuthInfo{
 		Username: "_token",
 		Password: strings.TrimSpace(string(token)), // need to remove trailing new line character
@@ -47,7 +47,7 @@ func fetchBearer(repo string, image string) (string, error) {
 	return resp.Token, nil
 }
 
-func constructAuthURL(repo string, image string) string {
+func constructGCRAuthURL(repo string, image string) string {
 	u := url.URL{
 		Scheme: "https",
 		Path:   path.Join(repo, "/v2/token"),
