@@ -16,7 +16,7 @@ type gcrAuthResponse struct {
 }
 
 type gcrTagsResponse struct {
-	Manifest map[string]json.RawMessage `json:"manifest"`
+	Manifest map[string]gcrImageDetail `json:"manifest"`
 }
 
 // for sorting setups
@@ -67,16 +67,12 @@ func constructGCRAPIURL(repo string, image string) string {
 	return u.String()
 }
 
-func parseGCRTagsResponse(manifests gcrTagsResponse) (gcrImages, error) {
+func parseGCRTagsResponse(manifests gcrTagsResponse) gcrImages {
 	gcrImages := gcrImages{}
 	for _, manifest := range manifests.Manifest {
-		var imageDetail gcrImageDetail
-		if err := json.Unmarshal([]byte(manifest), &imageDetail); err != nil {
-			return nil, err
-		}
-		gcrImages = append(gcrImages, imageDetail)
+		gcrImages = append(gcrImages, manifest)
 	}
-	return gcrImages, nil
+	return gcrImages
 }
 
 func extractGCRTagNames(images gcrImages) []string {
@@ -112,10 +108,6 @@ func retrieveFromGCR(repo string, image string) ([]string, error) {
 	}
 
 	images, err := parseGCRTagsResponse(resp)
-	if err != nil {
-		return nil, err
-	}
-
 	tags := extractGCRTagNames(images)
 	return tags, nil
 }
