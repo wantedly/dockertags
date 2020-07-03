@@ -10,11 +10,6 @@ import (
 	"strings"
 )
 
-type gcrAuthResponse struct {
-	Token     string `json:"token"`
-	ExpiresIn int    `json:"expires_in"`
-}
-
 type gcrTagsResponse struct {
 	Manifest map[string]gcrImageDetail `json:"manifest"`
 }
@@ -40,7 +35,7 @@ func fetchBearer(repo string, image string) (string, error) {
 		Password: strings.TrimSpace(string(token)), // need to remove trailing new line character
 	})
 
-	var resp gcrAuthResponse
+	var resp DockerHubAuthResponse
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
 		return "", err
 	}
@@ -107,7 +102,7 @@ func retrieveFromGCR(repo string, image string) ([]string, error) {
 		return nil, err
 	}
 
-	images, err := parseGCRTagsResponse(resp)
+	images := parseGCRTagsResponse(resp)
 	tags := extractGCRTagNames(images)
 	return tags, nil
 }
