@@ -47,7 +47,7 @@ latest
 - [Amazon ECR](https://aws.amazon.com/ecr/)
   - To retrieve tags of private image, [configure the profile for AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
 - [GCP GCR](https://cloud.google.com/container-registry)
-  - To retrieve tags of private image, install `gcloud` command and configure a proper IAM permissions.
+  - To retrieve tags of private image, configure a proper IAM permissions.
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)

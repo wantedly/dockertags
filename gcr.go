@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"os/exec"
 	"path"
 	"sort"
-	"strings"
+
+	"golang.org/x/oauth2/google"
 )
 
 type gcrTagsResponse struct {
@@ -16,15 +17,20 @@ type gcrTagsResponse struct {
 
 // for sorting setups
 type gcrImageDetail struct {
-	TimeCreatedMs string   `json:"timeCreatedMs"`
-	Tag           []string `json:"tag"`
+	TimeUploadedMs string   `json:"timeUploadedMs"`
+	Tag            []string `json:"tag"`
 }
 
 type gcrImages []gcrImageDetail
 
 // ref: https://stackoverflow.com/questions/34037256/does-google-container-registry-support-docker-remote-api-v2/34046435#34046435
 func fetchBearer(repo string, image string) (string, error) {
-	token, err := exec.Command("gcloud", "auth", "print-access-token").Output() // run gcloud command
+	credential, err := google.FindDefaultCredentials(context.Background())
+	if err != nil {
+		return "", err
+	}
+
+	token, err := credential.TokenSource.Token()
 	if err != nil {
 		return "", err
 	}
@@ -32,13 +38,17 @@ func fetchBearer(repo string, image string) (string, error) {
 	url := constructGCRAuthURL(repo, image)
 	body, err := httpGet(url, "", &BasicAuthInfo{
 		Username: "_token",
-		Password: strings.TrimSpace(string(token)), // need to remove trailing new line character
+		Password: token.AccessToken,
 	})
+	if err != nil {
+		return "", err
+	}
 
 	var resp DockerHubAuthResponse
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
 		return "", err
 	}
+
 	return resp.Token, nil
 }
 
@@ -73,7 +83,7 @@ func parseGCRTagsResponse(manifests gcrTagsResponse) gcrImages {
 func extractGCRTagNames(images gcrImages) []string {
 	tags := []string{}
 	sort.Slice(images, func(i, j int) bool {
-		return images[i].TimeCreatedMs > images[j].TimeCreatedMs
+		return images[i].TimeUploadedMs > images[j].TimeUploadedMs
 	}) // sort Newset -> Oldest
 
 	for _, image := range images {
@@ -85,10 +95,7 @@ func extractGCRTagNames(images gcrImages) []string {
 }
 
 func retrieveFromGCR(repo string, image string) ([]string, error) {
-	bearer, err := fetchBearer(repo, image)
-	if err != nil {
-		return nil, err
-	}
+	bearer, _ := fetchBearer(repo, image) // continue if fetchBearer fails for public images
 
 	url := constructGCRAPIURL(repo, image)
 
