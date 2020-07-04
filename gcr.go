@@ -23,7 +23,6 @@ type gcrImageDetail struct {
 
 type gcrImages []gcrImageDetail
 
-// ref: https://stackoverflow.com/questions/34037256/does-google-container-registry-support-docker-remote-api-v2/34046435#34046435
 func fetchBearer(repo string, image string) (string, error) {
 	credential, err := google.FindDefaultCredentials(context.Background())
 	if err != nil {
