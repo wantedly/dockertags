@@ -1,6 +1,6 @@
 # dockertags
 
-[![Docker Repository on Quay](https://quay.io/repository/wantedly/dockertags/status "Docker Repository on Quay")](https://quay.io/repository/wantedly/dockertags)
+[![Docker Image](https://img.shields.io/docker/build/wantedly/dockertags)](https://hub.docker.com/r/wantedly/dockertags)
 
 `dockertags` retrieves and print available Docker image tag list from image repository.
 

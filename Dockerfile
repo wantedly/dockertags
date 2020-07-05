@@ -1,17 +1,11 @@
-FROM alpine:3.4
+FROM golang:1.14 AS build
+WORKDIR /go/src/github.com/wantedly/dockertags
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go install -tags netgo -ldflags "-extldflags -static" .
 
-ENV GOPATH /go
-
-RUN apk add --no-cache --update ca-certificates
-
-COPY . /go/src/github.com/wantedly/dockertags
-
-RUN apk add --no-cache --update --virtual=build-deps go git make mercurial \
-    && cd /go/src/github.com/wantedly/dockertags \
-    && make \
-    && cp bin/dockertags /dockertags \
-    && cd / \
-    && rm -rf /go \
-    && apk del build-deps
-
-ENTRYPOINT ["/dockertags"]
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=build /go/bin/dockertags /bin/dockertags
+ENTRYPOINT ["/bin/dockertags"]
