@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/url"
 	"os"
-	"path"
 )
 
 const QuayURLBase = "https://quay.io/api/v1/repository/"
@@ -23,14 +22,19 @@ type QuayTagsResponse struct {
 }
 
 func constructQuayURL(image string) (string, error) {
-	u, err := url.Parse(QuayURLBase)
+	base, err := url.Parse(QuayURLBase)
+
 	if err != nil {
 		return "", err
 	}
 
-	u.Path = path.Join(u.Path, image, "tag") + "/"
+	endpoint, err := url.Parse(image + `/tag/?onlyActiveTags=true`)
 
-	return u.String(), nil
+	if err != nil {
+		return "", err
+	}
+
+	return base.ResolveReference(endpoint).String(), nil
 }
 
 func retriveFromQuay(image string) ([]string, error) {
