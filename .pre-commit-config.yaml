@@ -9,6 +9,7 @@ repos:
             exclude: build/
           - id: destroyed-symlinks
           - id: detect-private-key
+            exclude: .github/linters
           - id: check-ast
           - id: check-case-conflict
           - id: debug-statements
@@ -16,7 +17,7 @@ repos:
       rev: v1.2.0
       hooks:
           - id: detect-secrets
-            exclude: build/|.travis.yml
+            exclude: build/|.travis.yml|.github/linters
     - repo: https://github.com/golangci/golangci-lint
       rev: v1.49.0
       hooks:
