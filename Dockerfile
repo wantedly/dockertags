@@ -1,4 +1,4 @@
-FROM golang:1.14 AS build
+FROM golang:1.18 AS build
 WORKDIR /go/src/github.com/wantedly/dockertags
 COPY go.mod go.sum ./
 RUN go mod download

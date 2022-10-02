@@ -7,8 +7,10 @@ import (
 	"path"
 )
 
+// QuayURLBase base repository url
 const QuayURLBase = "https://quay.io/api/v1/repository/"
 
+// QuayTag struct mapped to Quay
 type QuayTag struct {
 	Revision      bool   `json:"revision"`
 	StartTs       int    `json:"start_ts"`
@@ -16,6 +18,7 @@ type QuayTag struct {
 	DockerImageID string `json:"docker_image_id"`
 }
 
+// QuayTagsResponse list of tags from quay
 type QuayTagsResponse struct {
 	HasAdditional bool      `json:"has_additional"`
 	Page          int       `json:"page"`

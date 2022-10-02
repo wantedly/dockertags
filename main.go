@@ -3,17 +3,20 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/docker/distribution/reference"
 )
 
-const Usage = `Usage:
-  dockertags IMAGENAME
-`
+// Usage string
+const Usage = `Usage: dockertags IMAGENAME [REGEXP]`
 
 func main() {
-	if len(os.Args) != 2 {
+	var tags []string
+	var re *regexp.Regexp
+
+	if len(os.Args) > 3 {
 		fmt.Fprintln(os.Stderr, Usage)
 		os.Exit(1)
 	}
@@ -25,7 +28,9 @@ func main() {
 	}
 	repo, image := reference.SplitHostname(ref)
 
-	var tags []string
+	if len(os.Args) == 3 {
+		re, _ = regexp.Compile(os.Args[2])
+	}
 
 	switch {
 	case repo == "docker.io" || repo == "hub.docker.com":
@@ -66,6 +71,10 @@ func main() {
 	}
 
 	for _, tag := range tags {
-		fmt.Println(tag)
+		if re == nil {
+			fmt.Println(tag)
+		} else if re.MatchString(tag) {
+			fmt.Println(tag)
+		}
 	}
 }

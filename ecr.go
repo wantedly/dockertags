@@ -10,7 +10,15 @@ import (
 )
 
 func retrieveFromECR(image string) ([]string, error) {
-	svc := ecr.New(session.New())
+	session, err := session.NewSession()
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			return nil, aerr
+		}
+		return nil, err
+	}
+
+	svc := ecr.New(session)
 	input := &ecr.DescribeImagesInput{
 		RepositoryName: aws.String(image),
 		Filter: &ecr.DescribeImagesFilter{

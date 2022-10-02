@@ -1,0 +1,78 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+dist: build
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    # you may remove this if you don't need go generate
+    - go generate ./...
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm64
+
+dockers:
+  - dockerfile: Dockerfile-release
+    #    use: buildx
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Tag }}-amd64
+    build_flag_templates:
+      - --platform=linux/amd64
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+  - dockerfile: Dockerfile-release
+    #    use: buildx
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Tag }}-arm64v8
+    build_flag_templates:
+      - --platform=linux/arm64/v8
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+
+# docker_manifests:
+#   - name_template: ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}
+#     image_templates:
+#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-amd64
+#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-arm64v8
+#   - name_template: ghcr.io/wantedly/{{ .ProjectName }}:latest
+#     image_templates:
+#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-amd64
+#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-arm64v8
+
+archives:
+  - replacements:
+      darwin: darwin
+      linux: linux
+      windows: windows
+      386: i386
+      amd64: amd64
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^vendor:"
