@@ -36,7 +36,7 @@ func constructQuayURL(image string) (string, error) {
 	return u.String(), nil
 }
 
-func retriveFromQuay(image string) ([]string, error) {
+func retrieveFromQuay(image string) ([]string, error) {
 	url, err := constructQuayURL(image)
 	if err != nil {
 		return nil, err

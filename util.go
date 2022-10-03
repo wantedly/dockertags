@@ -15,7 +15,11 @@ type BasicAuthInfo struct {
 }
 
 func httpGet(url, apiToken string, basicAuth *BasicAuthInfo) (string, error) {
-	req, _ := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+
 	if apiToken != "" {
 		req.Header.Set("Authorization", "Bearer "+apiToken)
 	}

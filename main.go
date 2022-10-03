@@ -42,7 +42,7 @@ func main() {
 
 		tags = t
 	case repo == "quay.io":
-		t, err := retriveFromQuay(image)
+		t, err := retrieveFromQuay(image)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
