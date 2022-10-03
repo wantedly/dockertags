@@ -3,7 +3,7 @@ module dockertags
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.44.108
+	github.com/aws/aws-sdk-go v1.44.109
 	github.com/docker/distribution v2.8.1+incompatible
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
 )
