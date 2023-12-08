@@ -11,6 +11,7 @@ import (
 
 func retrieveFromECR(image string) ([]string, error) {
 	session, err := session.NewSession()
+	allTags := []string{}
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			return nil, aerr
@@ -26,16 +27,26 @@ func retrieveFromECR(image string) ([]string, error) {
 		},
 	}
 
-	result, err := svc.DescribeImages(input)
-	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			return nil, aerr
-		}
-		return nil, err
-	}
+  for 	{
+   	result, err := svc.DescribeImages(input)
+   	if err != nil {
+   		if aerr, ok := err.(awserr.Error); ok {
+   			return nil, aerr
+   		}
+   		return nil, err
+   	}
 
-	tags := extractEcrTagNames(result.ImageDetails)
-	return tags, nil
+   	tags := extractEcrTagNames(result.ImageDetails)
+		allTags = append(allTags, tags...)
+		// Check if there are more results
+		if result.NextToken == nil {
+			// No more results, break out of the loop
+			break
+		}
+		// Set the next token for the next iteration
+		input.NextToken = result.NextToken
+	}
+	return allTags	, nil
 }
 
 func extractEcrTagNames(images []*ecr.ImageDetail) []string {
