@@ -46,7 +46,7 @@ dockers:
     goos: linux
     goarch: arm64
     image_templates:
-      - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Tag }}-arm64v8
+      - ghcr.io/haad/{{ .ProjectName }}:{{ .Tag }}-arm64v8
     build_flag_templates:
       - --platform=linux/arm64/v8
       - "--pull"
@@ -69,6 +69,12 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
 
 changelog:
   sort: asc
@@ -76,3 +82,4 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+      - "^vendor:"
