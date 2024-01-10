@@ -1,13 +1,20 @@
----
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
-dist: build
+
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 1
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
     - go generate ./...
+
 builds:
   - env:
       - CGO_ENABLED=0
@@ -26,7 +33,7 @@ dockers:
     goos: linux
     goarch: amd64
     image_templates:
-      - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Tag }}-amd64
+      - ghcr.io/haad/{{ .ProjectName }}:{{ .Tag }}-amd64
     build_flag_templates:
       - --platform=linux/amd64
       - "--pull"
@@ -48,32 +55,24 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
 
-# docker_manifests:
-#   - name_template: ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}
-#     image_templates:
-#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-amd64
-#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-arm64v8
-#   - name_template: ghcr.io/wantedly/{{ .ProjectName }}:latest
-#     image_templates:
-#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-amd64
-#       - ghcr.io/wantedly/{{ .ProjectName }}:{{ .Version }}-arm64v8
-
 archives:
-  - replacements:
-      darwin: darwin
-      linux: linux
-      windows: windows
-      386: i386
-      amd64: amd64
-checksum:
-  name_template: "checksums.txt"
-  algorithm: sha256
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+
 changelog:
   sort: asc
   filters:
     exclude:
       - "^docs:"
       - "^test:"
-      - "^vendor:"
