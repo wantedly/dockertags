@@ -1,5 +1,5 @@
 NAME := dockertags
-VERSION := v0.3.0
+VERSION := v0.3.1
 REVISION := $(shell git rev-parse --short HEAD)
 
 SRCS := $(shell find . -name '*.go' -type f)
@@ -16,6 +16,7 @@ bin/$(NAME): $(SRCS)
 clean:
 	rm -rf bin/*
 	rm -rf dist/*
+	rm -rf build/*
 
 .PHONY: cross-build
 cross-build:

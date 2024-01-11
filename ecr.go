@@ -10,15 +10,8 @@ import (
 )
 
 func retrieveFromECR(image string) ([]string, error) {
-	svc := ecr.New(session.New())
-	input := &ecr.DescribeImagesInput{
-		RepositoryName: aws.String(image),
-		Filter: &ecr.DescribeImagesFilter{
-			TagStatus: aws.String("TAGGED"), // extract tagged images only
-		},
-	}
-
-	result, err := svc.DescribeImages(input)
+	session, err := session.NewSession()
+	allTags := []string{}
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			return nil, aerr
@@ -26,8 +19,34 @@ func retrieveFromECR(image string) ([]string, error) {
 		return nil, err
 	}
 
-	tags := extractEcrTagNames(result.ImageDetails)
-	return tags, nil
+	svc := ecr.New(session)
+	input := &ecr.DescribeImagesInput{
+		RepositoryName: aws.String(image),
+		Filter: &ecr.DescribeImagesFilter{
+			TagStatus: aws.String("TAGGED"), // extract tagged images only
+		},
+	}
+
+  for 	{
+   	result, err := svc.DescribeImages(input)
+   	if err != nil {
+   		if aerr, ok := err.(awserr.Error); ok {
+   			return nil, aerr
+   		}
+   		return nil, err
+   	}
+
+   	tags := extractEcrTagNames(result.ImageDetails)
+		allTags = append(allTags, tags...)
+		// Check if there are more results
+		if result.NextToken == nil {
+			// No more results, break out of the loop
+			break
+		}
+		// Set the next token for the next iteration
+		input.NextToken = result.NextToken
+	}
+	return allTags	, nil
 }
 
 func extractEcrTagNames(images []*ecr.ImageDetail) []string {

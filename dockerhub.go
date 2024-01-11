@@ -8,15 +8,20 @@ import (
 	"path"
 )
 
+// DockerHubAuthURLBase Docker base auth url
 const DockerHubAuthURLBase = "https://auth.docker.io/token"
+
+// DockerHubAPIURLBase registry url
 const DockerHubAPIURLBase = "https://registry.hub.docker.com/v2/"
 
+// DockerHubAuthResponse struc containing response from dockerhub after authentication
 type DockerHubAuthResponse struct {
 	Token       string `json:"token"`
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"` // It's always 300 (sec) at this moment
 }
 
+// DockerHubTagsResponse list of tags
 type DockerHubTagsResponse struct {
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`

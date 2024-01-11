@@ -37,7 +37,7 @@ func fetchBearer(repo string, image string) (string, error) {
 	url := constructGCRAuthURL(repo, image)
 	body, err := httpGet(url, "", &BasicAuthInfo{
 		Username: "_token",
-		Password: token.AccessToken,
+		Password: token.AccessToken, //pragma: allowlist secret
 	})
 	if err != nil {
 		return "", err
@@ -80,15 +80,16 @@ func parseGCRTagsResponse(manifests gcrTagsResponse) gcrImages {
 }
 
 func extractGCRTagNames(images gcrImages) []string {
-	tags := []string{}
+	var tags []string
 	sort.Slice(images, func(i, j int) bool {
 		return images[i].TimeUploadedMs > images[j].TimeUploadedMs
 	}) // sort Newset -> Oldest
 
 	for _, image := range images {
-		for _, tag := range image.Tag {
-			tags = append(tags, tag)
-		}
+		// for _, tag := range image.Tag {
+		// 	tags = append(tags, tag)
+		// }
+		tags = append(tags, image.Tag...)
 	}
 	return tags
 }
